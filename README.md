@@ -16,9 +16,9 @@ Available variables are listed below, along with default values (see `defaults/m
 
     workspace: /root
 
-Where certain files will be downloaded and adjusted prior to git installation, if needed.
+The most current stable version of Git for Debian.
 
-    git_enablerepo: ""
+    git_repository: "ppa:git-core/ppa"
 
 This variable, a well as `git_packages`, will be used to install git via a particular `yum` repo if `git_install_from_source` is false (CentOS only). Any additional repositories you have installed that you would like to use for a newer/different Git version.
 
