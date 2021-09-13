@@ -1,17 +1,17 @@
 ---
 - name: Include OS-specific variables (RedHat).
-  include_vars: "{{ ansible_os_family }}.yml"
+  include_vars: "{{ ansible_facts['os_family'] }}.yml"
   when:
-    - ansible_os_family == "RedHat"
-    - ansible_distribution != "Fedora"
+    - ansible_facts['os_family'] == "RedHat"
+    - ansible_facts['distribution'] != "Fedora"
 
 - name: Include OS-specific variables (Fedora).
-  include_vars: "{{ ansible_distribution }}.yml"
-  when: ansible_distribution == "Fedora"
+  include_vars: "{{ ansible_facts['distribution'] }}.yml"
+  when: ansible_facts['distribution'] == "Fedora"
 
 - name: Include OS-specific variables (Debian).
-  include_vars: "{{ ansible_os_family }}.yml"
-  when: ansible_os_family == "Debian"
+  include_vars: "{{ ansible_facts['os_family'] }}.yml"
+  when: ansible_facts['os_family'] == "Debian"
 
 - name: Define git_install_from_source_dependencies.
   set_fact:
@@ -41,7 +41,7 @@
 
 - name: Download git.
   get_url:
-    url: "https://www.kernel.org/pub/software/scm/git/git-{{ git_version }}.tar.gz"
+    url: "https://mirrors.edge.kernel.org/pub/software/scm/git/git-{{ git_version }}.tar.gz"
     dest: "{{ workspace }}/git-{{ git_version }}.tar.gz"
   when: (git_installed_version.rc != 0) or (git_reinstall_from_source | bool)
 
