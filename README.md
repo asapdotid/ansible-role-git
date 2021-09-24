@@ -1,10 +1,27 @@
-# Ansible Role: Git
+<p align="center"> <img src="https://user-images.githubusercontent.com/34257858/129839002-15e3f2c7-3f75-46d4-afae-0fd207d7fdde.png" width="100" height="100"></p>
 
-[![CI](https://github.com/geerlingguy/ansible-role-git/workflows/CI/badge.svg?event=push)](https://github.com/geerlingguy/ansible-role-git/actions?query=workflow%3ACI)
+<h1 align="center">
+    Ansible Role Git
+</h1>
 
-Installs Git, a distributed version control system, on any RHEL/CentOS or Debian/Ubuntu Linux system.
+<p align="center" style="font-size: 1.2rem;">
+    Installs Git, a distributed version control system, on any RHEL/CentOS or Debian/Ubuntu Linux system.
+</p>
 
-> Ansible > 2.9
+<p align="center">
+
+<a href="https://www.ansible.com">
+  <img src="https://img.shields.io/badge/Ansible-2.10-green?style=flat&logo=ansible" alt="Ansible">
+</a>
+<a href="LICENSE.md">
+  <img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="Licence">
+</a>
+<a href="https://ubuntu.com/">
+  <img src="https://img.shields.io/badge/ubuntu-20.x-orange?style=flat&logo=ubuntu" alt="Distribution">
+</a>
+<a href="https://www.centos.org/">
+  <img src="https://img.shields.io/badge/CentOS-8-green?style=flat&logo=centos" alt="Distribution">
+</a>
 
 ## Requirements
 
