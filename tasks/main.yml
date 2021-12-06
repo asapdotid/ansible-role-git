@@ -26,7 +26,7 @@
 - name: GIT | Ensure git is installed (Debian).
   ansible.builtin.apt:
     name: "{{ git_packages }}"
-    state: latest
+    state: present
   when:
     - not git_install_from_source | bool
     - ansible_facts['os_family'] == 'Debian'
