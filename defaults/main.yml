@@ -1,5 +1,5 @@
 ---
-workspace: /tmp
+workspace: /tmp/git-sources
 
 # If git_install_from_source is set to false, these two variables define whether
 # to use an additional repo for the package installation, and which git packages

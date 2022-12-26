@@ -7,4 +7,4 @@ git_install_from_source_dependencies:
   - libz-dev
   - build-essential
   - gcc
-  - cmake
+  - make

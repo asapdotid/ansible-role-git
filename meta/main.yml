@@ -3,11 +3,11 @@ dependencies: []
 
 galaxy_info:
   role_name: git
-  author: geerlingguy
+  author: asapdotid
   description: Git version control software
   company: "Midwestern Mac, LLC"
   license: "license (BSD, MIT)"
-  min_ansible_version: 2.5
+  min_ansible_version: "2.10"
   platforms:
     - name: EL
       versions:

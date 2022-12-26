@@ -6,7 +6,7 @@
   vars:
     git_install_from_source: true
     git_install_from_source_force_update: true
-    git_version: "2.26.0"
+    git_version: "2.38.2"
 
   pre_tasks:
     - name: Update apt cache.
@@ -15,4 +15,4 @@
       changed_when: false
 
   roles:
-    - role: geerlingguy.git
+    - role: "asapdotid.git"

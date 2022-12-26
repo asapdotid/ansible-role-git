@@ -14,36 +14,37 @@
   tags:
     - git
 
+- name: GIT | Get installed version.
+  ansible.builtin.shell: >
+    which git && git --version | grep -o '\([0-9\.]*\)'
+  failed_when: false
+  check_mode: false
+  register: git_version_ok
+  changed_when: (git_version_ok.rc != 0) and (git_version_ok.stdout_lines[1] is version(git_version, '<', strict=true))
+
 - name: GIT | Ensure git's dependencies are installed.
   ansible.builtin.package:
     name: "{{ git_install_from_source_dependencies }}"
     state: present
-
-- name: GIT | Get installed version.
-  debug:
-    msg: "GIT NOT found"
-  when: "'git' not in ansible_facts.packages"
-  register: git_installed
-
-- name: GIT | Remove the GIT package and upgrade
-  ansible.builtin.package:
-    name: git
-    state: absent
-  when: "'git' in ansible_facts.packages"
+  when: git_version_ok.changed | bool
 
 - name: GIT | Force git install if the version numbers do not match.
   ansible.builtin.set_fact:
     git_reinstall_from_source: true
   when:
     - git_install_from_source_force_update | bool
-    - ("'git' not in ansible_facts.packages")
+    - git_version_ok.changed | bool
+
+- name: GIT | Build temp directory
+  ansible.builtin.file:
+    path: "{{ workspace }}"
+    state: directory
 
 - name: GIT | Download git from source
   ansible.builtin.get_url:
     url: "https://www.kernel.org/pub/software/scm/git/git-{{ git_version }}.tar.gz"
     dest: "{{ workspace }}/git-{{ git_version }}.tar.gz"
-  when:
-    - (git_reinstall_from_source | bool) or (ansible_facts.packages.git[0].version < git_version)
+  when: (git_version_ok.changed | bool) or (git_reinstall_from_source | bool)
 
 - name: GIT | Expand git archive.
   ansible.builtin.unarchive:
@@ -51,8 +52,7 @@
     dest: "{{ workspace }}"
     creates: "{{ workspace }}/git-{{ git_version }}/README"
     copy: false
-  when:
-    - (git_reinstall_from_source | bool) or (ansible_facts.packages.git[0].version < git_version)
+  when: (git_version_ok.changed | bool) or (git_reinstall_from_source | bool)
 
 - name: GIT | Build git from source
   community.general.make:
@@ -63,14 +63,17 @@
   loop:
     - all
     - install
-  when:
-    - (git_reinstall_from_source | bool) or (ansible_facts.packages.git[0].version < git_version)
   become: true
+  when: (git_version_ok.changed | bool) or (git_reinstall_from_source | bool)
+  register: git_installed
 
-- name: GIT | Remove file (delete file) after install
+- name: GIT | Cleanup install (delete files)
   ansible.builtin.file:
-    path: "{{ item }}"
+    path: "{{ workspace }}"
     state: absent
-  loop:
-    - "{{ workspace }}/git-{{ git_version }}.tar.gz"
-    - "{{ workspace }}/git-{{ git_version }}"
+    force: true
+  ignore_errors: true
+  become: true
+  when:
+    - git_installed.changed
+    - not git_installed.failed
