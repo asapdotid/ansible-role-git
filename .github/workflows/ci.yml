@@ -10,7 +10,7 @@ name: CI
 
 defaults:
   run:
-    working-directory: "geerlingguy.git"
+    working-directory: "asapdotid.git"
 
 jobs:
   lint:
@@ -18,12 +18,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out the codebase.
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           path: "geerlingguy.git"
 
       - name: Set up Python 3.
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: "3.x"
 
@@ -42,23 +42,23 @@ jobs:
         include:
           - distro: centos7
             playbook: converge.yml
-          - distro: ubuntu1804
+          - distro: ubuntu2004
             playbook: converge.yml
-          - distro: debian9
+          - distro: debian10
             playbook: converge.yml
           - distro: centos7
             playbook: source-install.yml
-          - distro: ubuntu1804
+          - distro: ubuntu2204
             playbook: source-install.yml
 
     steps:
       - name: Check out the codebase.
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
-          path: "geerlingguy.git"
+          path: "asapdotid.git"
 
       - name: Set up Python 3.
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: "3.x"
 
