@@ -20,7 +20,14 @@
   failed_when: false
   check_mode: false
   register: git_version_ok
-  changed_when: (git_version_ok.rc != 0) and (git_version_ok.stdout_lines[1] is version(git_version, '<', strict=true))
+  changed_when: (git_version_ok.rc != 0) or (git_version_ok.stdout_lines[1] is version(git_version, '<'))
+
+- name: GIT | Remove the GIT current package and upgrade
+  ansible.builtin.package:
+    name: git
+    state: absent
+  become: true
+  when: (git_version_ok.rc != 0) or (git_version_ok.stdout_lines[1] is undefined) or (git_version_ok.stdout_lines[1] is version(git_version, '<'))
 
 - name: GIT | Ensure git's dependencies are installed.
   ansible.builtin.package:
@@ -55,25 +62,24 @@
   when: (git_version_ok.changed | bool) or (git_reinstall_from_source | bool)
 
 - name: GIT | Build git from source
-  community.general.make:
-    chdir: "{{ workspace }}/git-{{ git_version }}"
-    target: "{{ item }}"
-    params:
-      prefix: "{{ git_install_path }}"
+  ansible.builtin.command: >
+    make prefix={{ git_install_path }} {{ item }}
+    chdir={{ workspace }}/git-{{ git_version }}
   loop:
     - all
     - install
+  when: (git_version_ok.rc != 0) or (git_reinstall_from_source | bool)
   become: true
-  when: (git_version_ok.changed | bool) or (git_reinstall_from_source | bool)
   register: git_installed
 
-- name: GIT | Cleanup install (delete files)
-  ansible.builtin.file:
+- name: Check if the directory exists
+  ansible.builtin.stat:
     path: "{{ workspace }}"
-    state: absent
-    force: true
+  register: dir_to_check
+
+- name: GIT | Cleanup install (delete files)
+  ansible.builtin.command: >
+    rm -rf {{ workspace }}
   ignore_errors: true
   become: true
-  when:
-    - git_installed.changed
-    - not git_installed.failed
+  when: (git_installed.changed | bool and not git_installed.failed | bool) or (dir_to_check.stat.isdir is defined and dir_to_check.stat.isdir)

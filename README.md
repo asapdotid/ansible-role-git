@@ -6,6 +6,7 @@
 
 <p align="center" style="font-size: 1.2rem;">
     Installs Git, a distributed version control system, on any RHEL/CentOS or Debian/Ubuntu Linux system.
+    Base project [Jeff Geerling](https://www.jeffgeerling.com/)
 </p>
 
 <p align="center">
@@ -46,7 +47,7 @@ The specific Git packages that will be installed. By default, only `git` is inst
 
     git_install_from_source: false
     git_install_path: "/usr"
-    git_version: "2.26.0"
+    git_version: "2.38.2"
 
 Whether to install Git from source; if set to `true`, `git_version` is required and will be used to install a particular version of git (see all available versions here: https://mirrors.edge.kernel.org/pub/software/scm/git/), and `git_install_path` defines where git should be installed.
 
@@ -70,4 +71,4 @@ MIT / BSD
 
 ## Author Information
 
-This role was created in 2014 by [Jeff Geerling](https://www.jeffgeerling.com/), author of [Ansible for DevOps](https://www.ansiblefordevops.com/).
+This Ansible Role Git was created in 2021 by [Asapdotid](https://github.com/asapdotid).
