@@ -32,8 +32,6 @@ None.
 
 Available variables are listed below, along with default values (see `defaults/main.yml`):
 
-    workspace: /tmp/git-sources
-
 The most current stable version of Git for Debian.
 
     git_repository: "ppa:git-core/ppa"
