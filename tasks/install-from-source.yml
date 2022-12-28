@@ -12,7 +12,7 @@
       paths:
         - vars
   tags:
-    - git
+    - always
 
 - name: GIT | Get installed version.
   ansible.builtin.shell: >
@@ -42,29 +42,30 @@
     - git_install_from_source_force_update | bool
     - git_version_ok.changed | bool
 
-- name: GIT | Build temp directory
-  ansible.builtin.file:
-    path: "{{ workspace }}"
+- name: GIT | Build temp build directory
+  ansible.builtin.tempfile:
     state: directory
+    suffix: build
+  register: tempfile_build
 
 - name: GIT | Download git from source
   ansible.builtin.get_url:
     url: "https://www.kernel.org/pub/software/scm/git/git-{{ git_version }}.tar.gz"
-    dest: "{{ workspace }}/git-{{ git_version }}.tar.gz"
+    dest: "{{ tempfile_build.path }}/git-{{ git_version }}.tar.gz"
   when: (git_version_ok.changed | bool) or (git_reinstall_from_source | bool)
 
 - name: GIT | Expand git archive.
   ansible.builtin.unarchive:
-    src: "{{ workspace }}/git-{{ git_version }}.tar.gz"
-    dest: "{{ workspace }}"
-    creates: "{{ workspace }}/git-{{ git_version }}/README"
+    src: "{{ tempfile_build.path }}/git-{{ git_version }}.tar.gz"
+    dest: "{{ tempfile_build.path }}"
+    creates: "{{ tempfile_build.path }}/git-{{ git_version }}/README"
     copy: false
   when: (git_version_ok.changed | bool) or (git_reinstall_from_source | bool)
 
 - name: GIT | Build git from source
   ansible.builtin.command: >
     make prefix={{ git_install_path }} {{ item }}
-    chdir={{ workspace }}/git-{{ git_version }}
+    chdir={{ tempfile_build.path }}/git-{{ git_version }}
   loop:
     - all
     - install
@@ -72,14 +73,8 @@
   become: true
   register: git_installed
 
-- name: Check if the directory exists
-  ansible.builtin.stat:
-    path: "{{ workspace }}"
-  register: dir_to_check
-
-- name: GIT | Cleanup install (delete files)
-  ansible.builtin.command: >
-    rm -rf {{ workspace }}
-  ignore_errors: true
-  become: true
-  when: (git_installed.changed | bool and not git_installed.failed | bool) or (dir_to_check.stat.isdir is defined and dir_to_check.stat.isdir)
+- name: GIT | Cleanup (delete files) the temporary file
+  ansible.builtin.file:
+    path: "{{ tempfile_build.path }}"
+    state: absent
+  when: tempfile_build.path is defined
