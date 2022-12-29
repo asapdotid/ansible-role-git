@@ -52,14 +52,16 @@
   ansible.builtin.get_url:
     url: "https://www.kernel.org/pub/software/scm/git/git-{{ git_version }}.tar.gz"
     dest: "{{ tempfile_build.path }}/git-{{ git_version }}.tar.gz"
+    mode: "0644"
   when: (git_version_ok.changed | bool) or (git_reinstall_from_source | bool)
 
-- name: GIT | Expand git archive.
+- name: GIT | Unarchive a file that needs to be install.
   ansible.builtin.unarchive:
     src: "{{ tempfile_build.path }}/git-{{ git_version }}.tar.gz"
     dest: "{{ tempfile_build.path }}"
     creates: "{{ tempfile_build.path }}/git-{{ git_version }}/README"
     copy: false
+    mode: "0755"
   when: (git_version_ok.changed | bool) or (git_reinstall_from_source | bool)
 
 - name: GIT | Build git from source
@@ -77,4 +79,7 @@
   ansible.builtin.file:
     path: "{{ tempfile_build.path }}"
     state: absent
+    force: true
+  failed_when: false
+  no_log: true
   when: tempfile_build.path is defined
