@@ -16,32 +16,31 @@
 
 - name: GIT | Get installed version.
   ansible.builtin.shell: >
-    set -o pipefail
     which git && git --version | grep -o '\([0-9\.]*\)'
   failed_when: false
   check_mode: false
-  register: git_version_ok
-  changed_when: (git_version_ok.rc != 0) or (git_version_ok.stdout_lines[1] is version(git_version, '<'))
+  register: git_current_version
+  changed_when: (git_current_version.rc != 0) or (git_current_version.stdout_lines[1] is version(git_version, '<'))
 
 - name: GIT | Remove the GIT current package and upgrade
   ansible.builtin.package:
     name: git
     state: absent
   become: true
-  when: (git_version_ok.rc != 0) or (git_version_ok.stdout_lines[1] is undefined) or (git_version_ok.stdout_lines[1] is version(git_version, '<'))
+  when: (git_current_version.rc != 0) or (git_current_version.stdout_lines[1] is undefined) or (git_current_version.stdout_lines[1] is version(git_version, '<'))
 
 - name: GIT | Ensure git's dependencies are installed.
   ansible.builtin.package:
     name: "{{ git_install_from_source_dependencies }}"
     state: present
-  when: git_version_ok.changed | bool # noqa: no-handler
+  when: git_current_version.changed | bool # noqa: no-handler
 
 - name: GIT | Force git install if the version numbers do not match.
   ansible.builtin.set_fact:
     git_reinstall_from_source: true
   when:
+    - git_current_version.changed | bool
     - git_install_from_source_force_update | bool
-    - git_version_ok.changed | bool
 
 - name: GIT | Build temp build directory
   ansible.builtin.tempfile:
@@ -54,15 +53,16 @@
     url: "https://www.kernel.org/pub/software/scm/git/git-{{ git_version }}.tar.gz"
     dest: "{{ tempfile_build.path }}/git-{{ git_version }}.tar.gz"
     mode: "0644"
-  when: (git_version_ok.changed | bool) or (git_reinstall_from_source | bool)
+  when: (git_current_version.changed | bool) or (git_reinstall_from_source | bool)
 
-- name: GIT | Expand git archive.
+- name: GIT | Unarchive a file that needs to be install.
   ansible.builtin.unarchive:
     src: "{{ tempfile_build.path }}/git-{{ git_version }}.tar.gz"
     dest: "{{ tempfile_build.path }}"
     creates: "{{ tempfile_build.path }}/git-{{ git_version }}/README"
     copy: false
-  when: (git_version_ok.changed | bool) or (git_reinstall_from_source | bool)
+    mode: "0755"
+  when: (git_current_version.changed | bool) or (git_reinstall_from_source | bool)
 
 - name: GIT | Build git from source
   ansible.builtin.command: >
@@ -73,11 +73,14 @@
     - install
   become: true
   register: git_installed
-  changed_when: git_installed.rc !== 0
-  when: (git_version_ok.rc != 0) or (git_reinstall_from_source | bool)
+  changed_when: git_installed.rc != 0
+  when: git_reinstall_from_source | bool # noqa: no-handler
 
 - name: GIT | Cleanup (delete files) the temporary file
   ansible.builtin.file:
     path: "{{ tempfile_build.path }}"
     state: absent
-  when: tempfile_build.path is defined
+    force: true
+  failed_when: false
+  no_log: true
+  when: tempfile_build.path is defined # noqa: no-handler
