@@ -9,6 +9,3 @@ git_install_from_source_dependencies:
   - subversion-perl
   - make
   - gcc
-  - xmlto
-  - dh-autoreconf
-  - docbook2X
