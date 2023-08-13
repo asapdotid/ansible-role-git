@@ -1,36 +1,24 @@
 ---
-- name: GIT | Ensure git is installed (RedHat).
-  ansible.builtin.package:
-    name: "{{ git_packages }}"
-    state: present
-  when:
-    - not git_install_from_source | bool
-    - ansible_facts['os_family'] == 'RedHat'
+- name: Validate role variables
+  ansible.builtin.include_tasks: "{{ role_path }}/tasks/validate/validate.yml"
+  tags: git_validate
 
-- name: GIT | Add git repository from ppa (Debian).
-  ansible.builtin.apt_repository:
-    repo: "{{ git_repository }}"
-    state: present
-  when:
-    - not git_install_from_source | bool
-    - ansible_facts['os_family'] == 'Debian'
+- name: Check if Git installed version
+  ansible.builtin.include_tasks: "{{ role_path }}/tasks/config/ensure-version.yml"
+  tags: git_check
 
-- name: GIT | Update apt cache (Debian).
-  ansible.builtin.apt:
-    update_cache: yes
-    cache_valid_time: 3600
-  when:
-    - not git_install_from_source | bool
-    - ansible_facts['os_family'] == 'Debian'
+- name: Remove/Upgrade Git installed version
+  ansible.builtin.include_tasks: "{{ role_path }}/tasks/modify/remove-package.yml"
+  tags: git_upgrade_config
 
-- name: GIT | Ensure git is installed (Debian).
-  ansible.builtin.apt:
-    name: "{{ git_packages }}"
-    state: present
-  when:
-    - not git_install_from_source | bool
-    - ansible_facts['os_family'] == 'Debian'
+- name: Install dependencies
+  ansible.builtin.include_tasks: "{{ role_path }}/tasks/prerequisites/install-dependencies.yml"
+  tags: git_prerequisites
 
-- name: GIT | Install from source
-  ansible.builtin.import_tasks: install-from-source.yml
-  when: git_install_from_source | bool
+- name: Install Git package
+  ansible.builtin.include_tasks: "{{ role_path }}/tasks/install/install-package.yml"
+  tags: git_install
+
+- name: Install Git package from source
+  ansible.builtin.include_tasks: "{{ role_path }}/tasks/install/install-source-package.yml"
+  tags: git_install_source
