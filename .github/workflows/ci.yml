@@ -40,11 +40,17 @@ jobs:
     strategy:
       matrix:
         include:
+          - distro: almalinux8
+            playbook: converge.yml
           - distro: rockylinux8
             playbook: converge.yml
           - distro: ubuntu2004
             playbook: converge.yml
           - distro: ubuntu2204
+            playbook: converge.yml
+          - distro: fedora38
+            playbook: converge.yml
+          - distro: fedora39
             playbook: converge.yml
           - distro: debian11
             playbook: source-install.yml
