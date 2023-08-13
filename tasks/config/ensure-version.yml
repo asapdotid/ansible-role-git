@@ -1,0 +1,8 @@
+---
+- name: Ensure Git installed version
+  ansible.builtin.shell: >
+    which git && git --version | grep -o '\([0-9\.]*\)'
+  failed_when: false
+  check_mode: false
+  register: git_current_version
+  changed_when: (git_current_version.rc != 0) or (git_current_version.stdout_lines[1] is version(git_version, '<'))
