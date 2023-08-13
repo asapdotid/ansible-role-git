@@ -1,0 +1,9 @@
+---
+- name: Remove the GIT current package
+  ansible.builtin.package:
+    name: "{{ git_packages }}"
+    state: absent
+  become: true
+  register: git_current_remove
+  when:
+    - (git_state == 'absent') or ((git_current_version.rc == 0) and ((git_current_version.stdout_lines[1] is undefined) or (git_current_version.stdout_lines[1] is version(git_version, '<'))))
