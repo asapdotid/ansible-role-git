@@ -1,0 +1,7 @@
+---
+- name: Check that 'git_setup' is an allowed value
+  ansible.builtin.assert:
+    that: git_setup in git_setup_vars
+    fail_msg: The value you used for 'git_setup', {{ git_setup }}, is not allowed. The allowed values are [{{ git_setup_vars | join(', ') }}].
+  ignore_errors: true
+  register: git_setup_validate
