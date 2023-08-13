@@ -1,4 +1,13 @@
 ---
+- name: Check whether you are using a supported Git distribution
+  ansible.builtin.assert:
+    that:
+      - "{{ ansible_facts['os_family'] | lower in git_distributions.keys() | list }}"
+    success_msg: Your distribution, {{ git_distributions[ansible_facts['os_family'] | lower]['name'] }}, is supported by GitLab Runner.
+    fail_msg: Your distribution, {{ git_distributions[ansible_facts['os_family'] | lower]['name'] }}, is not supported by GitLab Runner.
+  ignore_errors: true
+  register: git_support_validate
+
 - name: Check that 'git_setup' is an allowed value
   ansible.builtin.assert:
     that: git_setup in git_setup_vars
