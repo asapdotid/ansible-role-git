@@ -1,2 +1,67 @@
 ---
-# This space intentionally left blank.
+# Supported Git installation OS family
+git_supported_distributions:
+  debian:
+    name: Debian/Ubuntu
+  fedora:
+    name: Fedora
+  redhat:
+    name: RedHat/AlamaLinux/Rocky Linux/CentOS
+
+# Set the git platforms check
+git_distributions: "{{ git_supported_distributions }}"
+
+# Setup initialization
+git_setup_vars: [install, uninstall]
+
+# Determine the current value of 'git_state'
+_git_state_vals:
+  install: present
+  uninstall: absent
+
+git_default_setup: install
+git_state: "{{ _git_state_vals[git_setup] | default(_git_state_vals[git_default_setup]) }}"
+
+# The package installation, and which git packages
+git_package: git
+
+git_archive_vesion_file: "git-{{ git_version }}.tar.gz"
+git_source_repository: "https://mirrors.edge.kernel.org/pub/software/scm/git/{{ git_archive_vesion_file }}"
+
+# Path installation
+git_install_path: "/usr"
+
+# Gilab runner requirements packages
+_git_requirements:
+  Debian:
+    - libcurl4-gnutls-dev
+    - libexpat1-dev
+    - gettext
+    - libssl-dev
+    - libz-dev
+    - build-essential
+    - gcc
+    - make
+  Fedora:
+    - gettext-devel
+    - expat-devel
+    - curl-devel
+    - zlib-devel
+    - perl-devel
+    - openssl-devel
+    - subversion-perl
+    - make
+    - gcc
+    - tar
+  RedHat:
+    - gettext-devel
+    - expat-devel
+    - curl-devel
+    - zlib-devel
+    - perl-devel
+    - openssl-devel
+    - subversion-perl
+    - make
+    - gcc
+
+git_requirements: "{{ _git_requirements[ansible_os_family] }}"
