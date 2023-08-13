@@ -5,24 +5,22 @@
 </h1>
 
 <p align="center" style="font-size: 1.2rem;">
-    Installs Git, a distributed version control system, on any RHEL/CentOS or Debian/Ubuntu Linux system.
-    Base project [Jeff Geerling](https://www.jeffgeerling.com/)
+    Installs Git, a distributed version control system, on any RHEL/CentOS/Almalinux/Rocky Linux, Fedora, Debian/Ubuntu Linux system.
 </p>
 
 <p align="center">
+  <a href="#">
+    <img alt="GitHub tag (with filter)" src="https://img.shields.io/github/v/tag/asapdotid/ansible-role-git">
+  </a>
+  <a href="https://www.ansible.com">
+    <img src="https://img.shields.io/badge/Ansible-2.10-green?style=flat&logo=ansible" alt="Ansible">
+  </a>
+  <a href="LICENSE.md">
+    <img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="Licence">
+  </a>
+</p>
 
-<a href="https://www.ansible.com">
-  <img src="https://img.shields.io/badge/Ansible-2.10-green?style=flat&logo=ansible" alt="Ansible">
-</a>
-<a href="LICENSE.md">
-  <img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="Licence">
-</a>
-<a href="https://ubuntu.com/">
-  <img src="https://img.shields.io/badge/ubuntu-20.x-orange?style=flat&logo=ubuntu" alt="Distribution">
-</a>
-<a href="https://www.centos.org/">
-  <img src="https://img.shields.io/badge/CentOS-8-green?style=flat&logo=centos" alt="Distribution">
-</a>
+Custom and inspire from [Jeff Geerling - Ansible role git](https://github.com/geerlingguy/ansible-role-git) with updates. Needed something simple and working, this did the trick for me.
 
 ## Requirements
 
@@ -32,24 +30,24 @@ None.
 
 Available variables are listed below, along with default values (see `defaults/main.yml`):
 
+| Name                        | Default Value | Description                                                   |
+| --------------------------- | ------------- | ------------------------------------------------------------- |
+| `git_setup`                 | `install`     | Specify whether you want to install Git `install`/`uninstall` |
+| `git_version`               | `"2.40.1"`    | The version of the Git to install                             |
+| `git_install_from_source`   | `false`       | Git install from source                                       |
+| `git_reinstall_from_source` | `false`       | Only applies if `git_install_from_source` is `true`           |
+
 The most current stable version of Git for Debian.
 
-    git_repository: "ppa:git-core/ppa"
+    git_debian_repository: "ppa:git-core/ppa"
 
-This variable, a well as `git_packages`, will be used to install git via a particular `yum` repo if `git_install_from_source` is false (CentOS only). Any additional repositories you have installed that you would like to use for a newer/different Git version.
-
-    git_packages:
-      - git
-
-The specific Git packages that will be installed. By default, only `git` is installed, but you could add additional git-related packages like `git-svn` if desired.
+This variable, a well as `git_package`, will be used to install git via a particular `yum` repo if `git_install_from_source` is false (CentOS only). Any additional repositories you have installed that you would like to use for a newer/different Git version.
 
     git_install_from_source: false
-    git_install_path: "/usr"
-    git_version: "2.38.2"
 
 Whether to install Git from source; if set to `true`, `git_version` is required and will be used to install a particular version of git (see all available versions here: https://mirrors.edge.kernel.org/pub/software/scm/git/), and `git_install_path` defines where git should be installed.
 
-    git_install_from_source_force_update: false
+    git_reinstall_from_source: false
 
 If git is already installed at and older version, force a new source build. Only applies if `git_install_from_source` is `true`.
 
