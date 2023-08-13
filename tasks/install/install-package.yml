@@ -1,0 +1,24 @@
+---
+- name: Install Git option for (Debian/Ubuntu)
+  when:
+    - git_state == 'present'
+    - not git_install_from_source | bool
+    - ansible_facts['os_family'] == 'Debian'
+  block:
+    - name: Add git repository from PPA
+      ansible.builtin.apt_repository:
+        repo: "{{ git_debian_repository }}"
+        state: present
+
+    - name: GIT | Update apt cache (Debian/Ubuntu).
+      ansible.builtin.apt:
+        update_cache: yes
+        cache_valid_time: 3600
+
+- name: GIT | Install Git on {{ ansible_facts['os_family'] }}
+  ansible.builtin.package:
+    name: "{{ git_package }}"
+    state: present
+  when:
+    - git_state == 'present'
+    - not git_install_from_source | bool
