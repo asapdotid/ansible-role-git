@@ -1,0 +1,46 @@
+---
+- name: Install Git from source repository
+  when:
+    - git_state == 'present'
+    - git_install_from_source | bool
+    - (git_current_remove.changed | bool) or (git_reinstall_from_source | bool)
+  block:
+    - name: Create temporary directory
+      ansible.builtin.tempfile:
+        state: directory
+        suffix: git-config
+      register: temp_git_config_dir
+      check_mode: false
+      changed_when: false
+
+    - name: Download Git from source
+      ansible.builtin.get_url:
+        url: "{{ git_source_repository }}"
+        dest: "{{ tempfile_build.path }}/{{ git_archive_vesion_file }}"
+        mode: '0644'
+
+    - name: Unarchive Git file from source
+      ansible.builtin.unarchive:
+        src: "{{ temp_git_config_dir.path }}/{{ git_archive_vesion_file }}"
+        dest: "{{ temp_git_config_dir.path }}"
+        creates: "{{ temp_git_config_dir.path }}/git-{{ git_version }}/README"
+        copy: false
+        mode: '0755'
+
+    - name: Build Git from source
+      ansible.builtin.command: >
+        make prefix={{ git_install_path }} {{ item }}
+        chdir={{ temp_git_config_dir.path }}/git-{{ git_version }}
+      loop:
+        - all
+        - install
+      register: git_installed
+      changed_when: git_installed.rc != 0
+
+    - name: Cleanup (delete files) the temporary file
+      ansible.builtin.file:
+        path: "{{ temp_git_config_dir.path }}"
+        state: absent
+        force: true
+      failed_when: false
+      no_log: true
