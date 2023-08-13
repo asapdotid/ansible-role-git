@@ -1,0 +1,9 @@
+---
+- name: Ensure git's dependencies are installed
+  ansible.builtin.package:
+    name: "{{ git_requirements }}"
+    state: present
+  when:
+    - git_state == 'present'
+    - git_install_from_source | bool
+    - git_current_remove.changed | bool
