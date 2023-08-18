@@ -16,7 +16,7 @@
     - name: Download Git from source
       ansible.builtin.get_url:
         url: "{{ git_source_repository }}"
-        dest: "{{ tempfile_build.path }}/{{ git_archive_vesion_file }}"
+        dest: "{{ temp_git_config_dir.path }}/{{ git_archive_vesion_file }}"
         mode: '0644'
 
     - name: Unarchive Git file from source
