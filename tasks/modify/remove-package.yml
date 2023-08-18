@@ -1,7 +1,7 @@
 ---
 - name: Remove the GIT current package
   ansible.builtin.package:
-    name: "{{ git_packages }}"
+    name: "{{ git_package }}"
     state: absent
   become: true
   register: git_current_remove
