@@ -1,13 +1,13 @@
 ---
-dependencies: []
-
 galaxy_info:
   role_name: git
   author: asapdotid
   description: Git version control software
-  company: "Asaplabs"
-  license: "license (BSD, MIT)"
+  company: none
+  license: MIT
+
   min_ansible_version: "2.10"
+
   platforms:
     - name: EL
       versions:
@@ -29,3 +29,5 @@ galaxy_info:
     - vcs
     - source
     - code
+
+dependencies: []
