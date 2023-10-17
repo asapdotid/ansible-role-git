@@ -14,7 +14,7 @@ git_debian_repository: "ppa:git-core/ppa"
 git_install_from_source: false
 
 # the 'git_version' variable instead of using a package.
-git_version: "2.40.1"
+git_version: "2.41.0"
 
 # If git is already installed at and older version, force a new source build.
 # Only applies if git_install_from_source is `true`.
